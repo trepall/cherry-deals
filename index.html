@@ -1,0 +1,1943 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cherry Deals</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui;
+        }
+
+        :root {
+            --primary: #ff4d8d;
+            --dark-red: #cc0066;
+            --background: #cc3366;
+            --white: #ffffff;
+            --cherry-color: #800040;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background: var(--background);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Auth Styles */
+        .auth-container {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            padding: 30px;
+            max-width: 400px;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        .auth-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .auth-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            position: relative;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: white;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-btn, .menu-toggle {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: white;
+            background: none;
+            border: none;
+            padding: 5px;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 80px;
+            right: 0;
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            width: 250px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .dropdown-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu ul {
+            list-style: none;
+            padding: 10px 0;
+        }
+
+        .dropdown-menu li {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            color: #333;
+        }
+
+        .dropdown-menu li:hover {
+            background: rgba(255, 77, 141, 0.1);
+        }
+
+        .dropdown-menu li i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* News Button */
+        .news-button {
+            background: #0088cc;
+            color: white;
+        }
+
+        .news-button:hover {
+            background: #0077b3;
+        }
+
+        .news-button i {
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 40px 0;
+        }
+
+        .title-container {
+            text-align: center;
+            margin-bottom: 40px;
+            z-index: 10;
+        }
+
+        .main-title {
+            font-size: 4rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        /* Cherry Animation */
+        .cherry-float {
+            position: absolute;
+            font-size: 1.5rem;
+            color: var(--cherry-color);
+            animation: float 6s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        /* Deals Section */
+        .deals-section {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 40px;
+            z-index: 10;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .deals-list {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .deal-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #333;
+        }
+
+        .deal-item:hover {
+            background: rgba(255, 77, 141, 0.05);
+        }
+
+        .deal-item:last-child {
+            border-bottom: none;
+        }
+
+        .deal-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .deal-amount {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .no-deals {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 20px;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .close-modal {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .modal-body {
+            padding: 20px;
+            color: #333;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        /* Deal Details Styles */
+        .deal-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .deal-info p {
+            margin-bottom: 8px;
+            padding: 5px 0;
+        }
+
+        .deal-url-container {
+            display: flex;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .deal-url {
+            flex: 1;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .copy-btn {
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .copy-btn:hover {
+            background: var(--dark-red);
+        }
+
+        /* Balance Styles */
+        .balance-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--primary);
+        }
+
+        .balance-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .balance-actions .btn {
+            flex: 1;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        /* Chat Styles */
+        .chat-container {
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            padding: 10px 15px;
+            border-radius: 8px;
+            max-width: 80%;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .user-message {
+            background: var(--primary);
+            color: white;
+            margin-left: auto;
+        }
+
+        .system-message {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .owner-message {
+            background: #4a148c;
+            color: white;
+        }
+
+        .success-message {
+            background: #4caf50;
+            color: white;
+            border-left: 4px solid #2e7d32;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .chat-send {
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Search Modal Styles */
+        .search-results {
+            margin-top: 20px;
+        }
+
+        .user-profile-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .user-profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 2rem;
+            margin: 0 auto 15px;
+        }
+
+        .user-profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .user-profile-balance {
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .user-deals-section {
+            margin-top: 20px;
+        }
+
+        .user-deals-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: #4caf50;
+            color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .notification.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .error {
+            background: #dc3545;
+        }
+
+        /* Subscribe Modal Styles */
+        .subscribe-modal {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .subscribe-modal .modal-content {
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .subscribe-icon {
+            font-size: 4rem;
+            color: #0088cc;
+            margin-bottom: 20px;
+        }
+
+        .subscribe-title {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .subscribe-text {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .telegram-btn {
+            background: #0088cc;
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .telegram-btn:hover {
+            background: #0077b3;
+            color: white;
+        }
+
+        /* Language Switch */
+        .language-option {
+            margin-bottom: 10px;
+        }
+
+        .language-option.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 3rem;
+            }
+            .subtitle {
+                font-size: 1.5rem;
+            }
+            .deal-url-container {
+                flex-direction: column;
+            }
+            .deal-url {
+                border-radius: 8px 8px 0 0;
+            }
+            .copy-btn {
+                border-radius: 0 0 8px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Авторизация -->
+        <div class="auth-container" id="authContainer">
+            <h2 class="auth-title">Cherry Deals</h2>
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="loginTab">Вход</div>
+                <div class="auth-tab" id="registerTab">Регистрация</div>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="text" class="form-input" placeholder="Имя пользователя" required id="loginUsername">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-input" placeholder="Пароль" required id="loginPassword">
+                </div>
+                <button type="submit" class="btn">Войти</button>
+            </form>
+            
+            <form id="registerForm" style="display: none;">
+                <div class="form-group">
+                    <input type="text" class="form-input" placeholder="Имя пользователя" required id="registerUsername">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-input" placeholder="Пароль" required id="registerPassword">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-input" placeholder="Повторите пароль" required id="registerPasswordConfirm">
+                </div>
+                <button type="submit" class="btn">Зарегистрироваться</button>
+            </form>
+        </div>
+
+        <!-- Основной контент -->
+        <div id="mainContent" style="display: none;">
+            <header>
+                <div class="user-profile" id="userProfile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-name" id="currentUserName">Пользователь</div>
+                </div>
+                
+                <div class="header-controls">
+                    <button class="search-btn" id="searchBtn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <div class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                </div>
+                
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <ul>
+                        <li data-modal="profile"><i class="fas fa-user"></i> <span data-translate="profile">Профиль</span></li>
+                        <li data-modal="createDeal"><i class="fas fa-plus-circle"></i> <span data-translate="create_deal">Создать сделку</span></li>
+                        <li data-modal="language"><i class="fas fa-globe"></i> <span data-translate="language">Язык</span></li>
+                        <li data-modal="support"><i class="fas fa-headset"></i> <span data-translate="support">Тех.Поддержка</span></li>
+                        <li data-modal="chat"><i class="fas fa-comments"></i> <span data-translate="chat">Чат</span></li>
+                        <li data-modal="balance"><i class="fas fa-wallet"></i> <span data-translate="balance">Баланс</span></li>
+                        <li class="news-button" onclick="window.open('https://t.me/cherrysnews', '_blank')">
+                            <i class="fab fa-telegram"></i> <span data-translate="news">Новости</span>
+                        </li>
+                        <li id="logoutBtn"><i class="fas fa-sign-out-alt"></i> <span data-translate="logout">Выйти</span></li>
+                    </ul>
+                </div>
+            </header>
+            
+            <main class="main-content">
+                <!-- Вишни -->
+                <div class="cherry-float" style="top: 5%; left: 2%;">🍒</div>
+                <div class="cherry-float" style="top: 15%; right: 3%;">🍒</div>
+                <div class="cherry-float" style="top: 25%; left: 8%;">🍒</div>
+                <div class="cherry-float" style="top: 35%; right: 10%;">🍒</div>
+                <div class="cherry-float" style="top: 45%; left: 5%;">🍒</div>
+                
+                <div class="title-container">
+                    <h1 class="main-title">CHERRY</h1>
+                    <h2 class="subtitle">DEALS</h2>
+                </div>
+                
+                <div class="deals-section">
+                    <h3 class="section-title" data-translate="your_deals">Ваши сделки</h3>
+                    <div class="deals-list" id="dealsList">
+                        <div class="no-deals">
+                            <i class="fas fa-shopping-cart" style="font-size: 3rem; margin-bottom: 15px; color: #ddd;"></i>
+                            <p data-translate="no_deals_yet">У вас пока нет сделок</p>
+                            <p data-translate="create_first_deal">Создайте свою первую сделку!</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Модальные окна -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-translate="profile">Профиль</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" data-translate="username">Имя пользователя</label>
+                    <input type="text" class="form-input" id="userNameInput">
+                </div>
+                <div class="balance-amount" id="profileBalance">0 ₽</div>
+                <button class="btn btn-block" id="saveProfile" data-translate="save">Сохранить</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="createDealModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-translate="create_deal">Создать сделку</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="createDealForm">
+                    <div class="form-group">
+                        <label class="form-label" data-translate="deal_description">Описание сделки</label>
+                        <textarea class="form-textarea" placeholder="Опишите суть сделки, название товара или ссылку на него" required id="dealDescription"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" data-translate="deal_amount">Сумма сделки</label>
+                        <input type="number" class="form-input" placeholder="Например: 1000" required id="dealAmount">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" data-translate="deal_currency">Валюта для оплаты</label>
+                        <select class="form-select" required id="dealCurrency">
+                            <option value="">Выберите валюту</option>
+                            <option value="RUB">Российский рубль (₽)</option>
+                            <option value="USD">Доллар США ($)</option>
+                            <option value="EUR">Евро (€)</option>
+                            <option value="USDT">USDT (крипто)</option>
+                            <option value="TON">TON (крипто)</option>
+                            <option value="BTC">Bitcoin (BTC)</option>
+                            <option value="ETH">Ethereum (ETH)</option>
+                            <option value="STARS">Звезды Telegram</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" data-translate="payment_details">Реквизиты для оплаты</label>
+                        <input type="text" class="form-input" placeholder="Адрес кошелька, номер карты или Telegram" required id="dealDetails">
+                    </div>
+                    <button type="submit" class="btn btn-block" data-translate="create_deal">Создать сделку</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно деталей сделки -->
+    <div class="modal" id="dealDetailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-translate="deal_details">Детали сделки</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="dealDetailsContent">
+                    <!-- Сюда загружаются данные сделки -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="balanceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-translate="balance">Баланс</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" data-translate="select_currency">Выберите валюту для отображения</label>
+                    <select class="form-select" id="balanceCurrencySelect">
+                        <option value="RUB">Российский рубль (₽)</option>
+                        <option value="USD">Доллар США ($)</option>
+                        <option value="EUR">Евро (€)</option>
+                        <option value="USDT">USDT</option>
+                        <option value="TON">TON</option>
+                    </select>
+                </div>
+                <div class="balance-amount" id="balanceAmount">0 ₽</div>
+                <div class="balance-actions">
+                    <button class="btn" onclick="showNotification(currentLanguage === 'ru' ? 'Для пополнения: 89202555790 (Юмани)' : 'For deposit: 89202555790 (YooMoney)')" data-translate="deposit">Пополнить</button>
+                    <button class="btn btn-secondary" data-modal="withdraw" data-translate="withdraw">Вывести</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="withdrawModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-translate="withdraw">Вывод средств</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="withdrawForm">
+                    <div class="form-group">
+                        <label class="form-label" data-translate="amount">Сумма</label>
+                        <input type="number" class="form-input" placeholder="Сумма" required id="withdrawAmount">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" data-translate="payment_details">Реквизиты</label>
+                        <input type="text" class="form-input" placeholder="Реквизиты" required id="withdrawDetails">
+                    </div>
+                    <button type="submit" class="btn btn-block" data-translate="withdraw">Вывести</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="chatModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-translate="chat">Чат</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message system-message" data-translate="welcome_chat">Добро пожаловать в чат!</div>
+                    </div>
+                    <div class="chat-input-container">
+                        <input type="text" class="chat-input" id="chatInput" placeholder="Сообщение..." data-translate="message_placeholder">
+                        <button class="chat-send" id="chatSend">➤</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="supportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-translate="support">Поддержка</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center;">
+                    <h3>t.me/CherryDealqq</h3>
+                    <p data-translate="contact_telegram">Напишите нам в Telegram</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="languageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-translate="language">Язык</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <button class="btn btn-block language-option active" onclick="changeLanguage('ru')">Русский</button>
+                <button class="btn btn-block language-option" onclick="changeLanguage('en')" style="margin-top:10px;">English</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для покупателя -->
+    <div class="modal" id="buyerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-translate="deal_payment">Оплата сделки</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="deal-info" id="buyerDealInfo">
+                    <!-- Информация о сделке для покупателя -->
+                </div>
+                <div class="form-group">
+                    <label class="form-label" data-translate="your_telegram">Ваш Telegram username</label>
+                    <input type="text" class="form-input" placeholder="@username" id="buyerTelegram">
+                </div>
+                <button class="btn btn-block" onclick="processPayment()" data-translate="confirm">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно успешной регистрации покупателя -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-translate="success">Успешно!</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 4rem; color: #4caf50; margin-bottom: 20px;">✓</div>
+                    <h3 style="color: #333; margin-bottom: 15px;" data-translate="data_sent">Данные успешно отправлены!</h3>
+                    <p style="color: #666; margin-bottom: 25px;" data-translate="seller_contact">Продавец получил ваши данные и свяжется с вами для завершения сделки</p>
+                    <button class="btn btn-block" onclick="showPaymentPage()" data-translate="proceed_payment">Перейти к оплате</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно оплаты -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-translate="deal_payment">Оплата сделки</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="deal-info">
+                    <p><strong data-translate="payment_instructions">Для завершения оплаты:</strong></p>
+                    <p data-translate="step1_payment">1. Переведите <span id="paymentAmount">0</span> <span id="paymentCurrency">RUB</span> на указанные реквизиты</p>
+                    <p data-translate="step2_payment">2. После перевода нажмите "Я оплатил"</p>
+                    <p data-translate="step3_payment">3. Ожидайте подтверждения от продавца</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" data-translate="payment_details">Реквизиты для оплаты:</label>
+                    <div class="deal-url-container">
+                        <div class="deal-url" id="paymentDetails">Реквизиты появятся здесь</div>
+                        <button class="copy-btn" onclick="copyPaymentDetails()" data-translate="copy">Копировать</button>
+                    </div>
+                </div>
+                <button class="btn btn-block" onclick="completePayment()" data-translate="i_paid">Я оплатил</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно подписки -->
+    <div class="modal subscribe-modal" id="subscribeModal">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="subscribe-icon">
+                    <i class="fab fa-telegram"></i>
+                </div>
+                <h3 class="subscribe-title" data-translate="news_subscription">Подписка на новости</h3>
+                <p class="subscribe-text" data-translate="subscribe_required">
+                    Перед использованием сайта пожалуйста подпишитесь на наш новостной канал!
+                    Без подписки функционал сайта будет ограничен.
+                </p>
+                <a href="https://t.me/cherrysnews" target="_blank" class="telegram-btn">
+                    <i class="fab fa-telegram"></i> <span data-translate="subscribe_channel">Подписаться на канал</span>
+                </a>
+                <button class="btn btn-block" id="confirmSubscribe" data-translate="i_subscribed">Я подписался</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно поиска пользователей -->
+    <div class="modal" id="searchModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" data-translate="user_search">Поиск пользователей</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="form-input" placeholder="Введите имя пользователя или ник..." id="searchUsername" data-translate="search_placeholder">
+                </div>
+                <button class="btn btn-block" id="searchUserBtn" data-translate="search">Найти</button>
+                
+                <div class="search-results" id="searchResults">
+                    <!-- Результаты поиска будут здесь -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">Уведомление</div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        // Система переводов
+        const translations = {
+            ru: {
+                'profile': 'Профиль',
+                'create_deal': 'Создать сделку',
+                'language': 'Язык',
+                'support': 'Тех.Поддержка',
+                'chat': 'Чат',
+                'balance': 'Баланс',
+                'news': 'Новости',
+                'logout': 'Выйти',
+                'your_deals': 'Ваши сделки',
+                'no_deals_yet': 'У вас пока нет сделок',
+                'create_first_deal': 'Создайте свою первую сделку!',
+                'username': 'Имя пользователя',
+                'save': 'Сохранить',
+                'deal_description': 'Описание сделки',
+                'deal_amount': 'Сумма сделки',
+                'deal_currency': 'Валюта для оплаты',
+                'payment_details': 'Реквизиты для оплаты',
+                'deal_details': 'Детали сделки',
+                'select_currency': 'Выберите валюту для отображения',
+                'deposit': 'Пополнить',
+                'withdraw': 'Вывести',
+                'amount': 'Сумма',
+                'welcome_chat': 'Добро пожаловать в чат!',
+                'message_placeholder': 'Сообщение...',
+                'contact_telegram': 'Напишите нам в Telegram',
+                'deal_payment': 'Оплата сделки',
+                'your_telegram': 'Ваш Telegram username',
+                'confirm': 'Подтвердить',
+                'success': 'Успешно!',
+                'data_sent': 'Данные успешно отправлены!',
+                'seller_contact': 'Продавец получил ваши данные и свяжется с вами для завершения сделки',
+                'proceed_payment': 'Перейти к оплате',
+                'payment_instructions': 'Для завершения оплаты:',
+                'step1_payment': '1. Переведите {amount} {currency} на указанные реквизиты',
+                'step2_payment': '2. После перевода нажмите "Я оплатил"',
+                'step3_payment': '3. Ожидайте подтверждения от продавца',
+                'copy': 'Копировать',
+                'i_paid': 'Я оплатил',
+                'news_subscription': 'Подписка на новости',
+                'subscribe_required': 'Перед использованием сайта пожалуйста подпишитесь на наш новостной канал! Без подписки функционал сайта будет ограничен.',
+                'subscribe_channel': 'Подписаться на канал',
+                'i_subscribed': 'Я подписался',
+                'user_search': 'Поиск пользователей',
+                'search_placeholder': 'Введите имя пользователя или ник...',
+                'search': 'Найти'
+            },
+            en: {
+                'profile': 'Profile',
+                'create_deal': 'Create Deal',
+                'language': 'Language',
+                'support': 'Support',
+                'chat': 'Chat',
+                'balance': 'Balance',
+                'news': 'News',
+                'logout': 'Logout',
+                'your_deals': 'Your Deals',
+                'no_deals_yet': 'You have no deals yet',
+                'create_first_deal': 'Create your first deal!',
+                'username': 'Username',
+                'save': 'Save',
+                'deal_description': 'Deal Description',
+                'deal_amount': 'Deal Amount',
+                'deal_currency': 'Payment Currency',
+                'payment_details': 'Payment Details',
+                'deal_details': 'Deal Details',
+                'select_currency': 'Select currency for display',
+                'deposit': 'Deposit',
+                'withdraw': 'Withdraw',
+                'amount': 'Amount',
+                'welcome_chat': 'Welcome to chat!',
+                'message_placeholder': 'Message...',
+                'contact_telegram': 'Contact us on Telegram',
+                'deal_payment': 'Deal Payment',
+                'your_telegram': 'Your Telegram username',
+                'confirm': 'Confirm',
+                'success': 'Success!',
+                'data_sent': 'Data successfully sent!',
+                'seller_contact': 'The seller received your data and will contact you to complete the deal',
+                'proceed_payment': 'Proceed to Payment',
+                'payment_instructions': 'To complete payment:',
+                'step1_payment': '1. Transfer {amount} {currency} to the specified details',
+                'step2_payment': '2. After transfer click "I paid"',
+                'step3_payment': '3. Wait for seller confirmation',
+                'copy': 'Copy',
+                'i_paid': 'I paid',
+                'news_subscription': 'News Subscription',
+                'subscribe_required': 'Before using the site, please subscribe to our news channel! Without subscription, site functionality will be limited.',
+                'subscribe_channel': 'Subscribe to channel',
+                'i_subscribed': 'I subscribed',
+                'user_search': 'User Search',
+                'search_placeholder': 'Enter username or nickname...',
+                'search': 'Search'
+            }
+        };
+
+        let currentLanguage = 'ru';
+
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            updateAllTexts();
+            showNotification(lang === 'ru' ? 'Язык изменен на русский' : 'Language changed to English');
+            document.getElementById('languageModal').classList.remove('active');
+            
+            document.querySelectorAll('.language-option').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function updateAllTexts() {
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[currentLanguage][key]) {
+                    if (element.placeholder !== undefined) {
+                        element.placeholder = translations[currentLanguage][key];
+                    } else {
+                        element.textContent = translations[currentLanguage][key];
+                    }
+                }
+            });
+        }
+
+        function t(key, params = {}) {
+            let text = translations[currentLanguage][key] || key;
+            Object.keys(params).forEach(param => {
+                text = text.replace(`{${param}}`, params[param]);
+            });
+            return text;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const USERS_KEY = 'cherry_global_users';
+            const DEALS_KEY = 'cherry_global_deals';
+            const CURRENT_USER_KEY = 'cherry_current_user';
+            const SUBSCRIBED_KEY = 'cherry_subscribed';
+
+            let users = JSON.parse(localStorage.getItem(USERS_KEY)) || {};
+            let allDeals = JSON.parse(localStorage.getItem(DEALS_KEY)) || {};
+            let currentUser = null;
+            let userDeals = [];
+            let currentDeal = null;
+
+            const exchangeRates = {
+                'RUB': 1,
+                'USD': 0.011,
+                'EUR': 0.01,
+                'USDT': 0.011,
+                'TON': 0.3
+            };
+
+            function getBaseUrl() {
+                if (typeof window !== 'undefined') {
+                    const url = window.location.href.split('?')[0].split('#')[0];
+                    return url.endsWith('/') ? url : url + '/';
+                }
+                return '';
+            }
+
+            function convertCurrency(amount, fromCurrency, toCurrency) {
+                if (fromCurrency === toCurrency) return amount;
+                const rubAmount = amount / exchangeRates[fromCurrency];
+                return rubAmount * exchangeRates[toCurrency];
+            }
+
+            function saveUsersToGlobalDB() {
+                localStorage.setItem(USERS_KEY, JSON.stringify(users));
+            }
+
+            function saveDealsToGlobalDB() {
+                localStorage.setItem(DEALS_KEY, JSON.stringify(allDeals));
+            }
+
+            function loadUsersFromGlobalDB() {
+                return JSON.parse(localStorage.getItem(USERS_KEY)) || {};
+            }
+
+            function loadDealsFromGlobalDB() {
+                return JSON.parse(localStorage.getItem(DEALS_KEY)) || {};
+            }
+
+            // Табы авторизации
+            document.getElementById('loginTab').addEventListener('click', function() {
+                document.getElementById('loginTab').classList.add('active');
+                document.getElementById('registerTab').classList.remove('active');
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+            });
+
+            document.getElementById('registerTab').addEventListener('click', function() {
+                document.getElementById('registerTab').classList.add('active');
+                document.getElementById('loginTab').classList.remove('active');
+                document.getElementById('registerForm').style.display = 'block';
+                document.getElementById('loginForm').style.display = 'none';
+            });
+
+            // Регистрация
+            document.getElementById('registerForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = document.getElementById('registerUsername').value;
+                const password = document.getElementById('registerPassword').value;
+                const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+
+                if (password !== passwordConfirm) {
+                    showNotification(currentLanguage === 'ru' ? 'Пароли не совпадают!' : 'Passwords do not match!', true);
+                    return;
+                }
+
+                users = loadUsersFromGlobalDB();
+
+                if (users[username]) {
+                    showNotification(currentLanguage === 'ru' ? 'Пользователь уже существует!' : 'User already exists!', true);
+                    return;
+                }
+
+                users[username] = { 
+                    username, 
+                    password, 
+                    balance: 0, 
+                    deals: [],
+                    createdAt: new Date().toISOString(),
+                    telegram: '',
+                    language: 'ru'
+                };
+                
+                saveUsersToGlobalDB();
+                showNotification(currentLanguage === 'ru' ? 'Регистрация успешна!' : 'Registration successful!');
+                document.getElementById('loginTab').click();
+                this.reset();
+            });
+
+            // Вход
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = document.getElementById('loginUsername').value;
+                const password = document.getElementById('loginPassword').value;
+
+                users = loadUsersFromGlobalDB();
+
+                if (users[username] && users[username].password === password) {
+                    currentUser = users[username];
+                    currentLanguage = currentUser.language || 'ru';
+                    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(currentUser));
+                    
+                    const isSubscribed = localStorage.getItem(SUBSCRIBED_KEY + '_' + username);
+                    if (!isSubscribed) {
+                        showSubscribeModal();
+                    } else {
+                        showMainContent();
+                    }
+                    showNotification(currentLanguage === 'ru' ? 'Успешный вход!' : 'Login successful!');
+                } else {
+                    showNotification(currentLanguage === 'ru' ? 'Неверные данные!' : 'Invalid credentials!', true);
+                }
+                this.reset();
+            });
+
+            function showSubscribeModal() {
+                document.getElementById('subscribeModal').classList.add('active');
+            }
+
+            document.getElementById('confirmSubscribe').addEventListener('click', function() {
+                localStorage.setItem(SUBSCRIBED_KEY + '_' + currentUser.username, 'true');
+                document.getElementById('subscribeModal').classList.remove('active');
+                showMainContent();
+                showNotification(currentLanguage === 'ru' ? 'Спасибо за подписку!' : 'Thank you for subscription!');
+            });
+
+            function showMainContent() {
+                document.getElementById('authContainer').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                document.getElementById('currentUserName').textContent = currentUser.username;
+                document.getElementById('userNameInput').value = currentUser.username;
+                
+                allDeals = loadDealsFromGlobalDB();
+                userDeals = currentUser.deals ? currentUser.deals.map(dealId => allDeals[dealId]).filter(deal => deal) : [];
+                updateDealsList();
+                updateBalance();
+                updateAllTexts();
+            }
+
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                localStorage.removeItem(CURRENT_USER_KEY);
+                currentUser = null;
+                document.getElementById('mainContent').style.display = 'none';
+                document.getElementById('authContainer').style.display = 'block';
+                showNotification(currentLanguage === 'ru' ? 'Вы вышли' : 'You logged out');
+            });
+
+            document.getElementById('menuToggle').addEventListener('click', function() {
+                document.getElementById('dropdownMenu').classList.toggle('active');
+            });
+
+            document.getElementById('searchBtn').addEventListener('click', function() {
+                document.getElementById('searchModal').classList.add('active');
+                document.getElementById('searchUsername').value = '';
+                document.getElementById('searchResults').innerHTML = '';
+            });
+
+            document.getElementById('searchUserBtn').addEventListener('click', function() {
+                const searchTerm = document.getElementById('searchUsername').value.trim().toLowerCase();
+                if (!searchTerm) {
+                    showNotification(currentLanguage === 'ru' ? 'Введите имя пользователя для поиска' : 'Enter username for search', true);
+                    return;
+                }
+
+                users = loadUsersFromGlobalDB();
+                allDeals = loadDealsFromGlobalDB();
+
+                const searchResults = document.getElementById('searchResults');
+                searchResults.innerHTML = '';
+
+                let foundUser = null;
+                for (const username in users) {
+                    if (username.toLowerCase().includes(searchTerm)) {
+                        foundUser = users[username];
+                        break;
+                    }
+                }
+
+                if (!foundUser) {
+                    searchResults.innerHTML = `<div class="no-deals">${currentLanguage === 'ru' ? 'Пользователь не найден' : 'User not found'}</div>`;
+                    return;
+                }
+
+                const userCard = document.createElement('div');
+                userCard.className = 'user-profile-card';
+                userCard.innerHTML = `
+                    <div class="user-profile-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-profile-name">${foundUser.username}</div>
+                    <div class="user-profile-balance">${currentLanguage === 'ru' ? 'Баланс' : 'Balance'}: ${foundUser.balance} ₽</div>
+                    <div style="font-size: 0.9rem; color: #666;">${currentLanguage === 'ru' ? 'Зарегистрирован' : 'Registered'}: ${new Date(foundUser.createdAt).toLocaleDateString()}</div>
+                `;
+                searchResults.appendChild(userCard);
+
+                const userDealIds = foundUser.deals || [];
+                const userDealsList = userDealIds.map(dealId => allDeals[dealId]).filter(deal => deal);
+
+                if (userDealsList.length > 0) {
+                    const dealsSection = document.createElement('div');
+                    dealsSection.className = 'user-deals-section';
+                    dealsSection.innerHTML = `<div class="user-deals-title">${currentLanguage === 'ru' ? 'Сделки пользователя:' : 'User deals:'}</div>`;
+                    
+                    const dealsList = document.createElement('div');
+                    dealsList.className = 'deals-list';
+                    
+                    userDealsList.forEach(deal => {
+                        const dealItem = document.createElement('div');
+                        dealItem.className = 'deal-item';
+                        dealItem.innerHTML = `
+                            <div class="deal-title">${deal.description}</div>
+                            <div class="deal-amount">${deal.amount} ${getCurrencySymbol(deal.currency)}</div>
+                            <div>${currentLanguage === 'ru' ? 'Статус' : 'Status'}: ${getDealStatusText(deal.status)}</div>
+                            ${deal.buyerTelegram ? `<div>${currentLanguage === 'ru' ? 'Покупатель' : 'Buyer'}: ${deal.buyerTelegram}</div>` : ''}
+                        `;
+                        dealItem.addEventListener('click', () => {
+                            openDealPaymentModal(deal, foundUser.username);
+                        });
+                        dealsList.appendChild(dealItem);
+                    });
+                    
+                    dealsSection.appendChild(dealsList);
+                    searchResults.appendChild(dealsSection);
+                } else {
+                    const noDeals = document.createElement('div');
+                    noDeals.className = 'no-deals';
+                    noDeals.innerHTML = `<p>${currentLanguage === 'ru' ? 'У пользователя нет активных сделок' : 'User has no active deals'}</p>`;
+                    searchResults.appendChild(noDeals);
+                }
+            });
+
+            function getDealStatusText(status) {
+                const statusMap = {
+                    'pending': currentLanguage === 'ru' ? '⏳ Ожидает покупателя' : '⏳ Waiting for buyer',
+                    'waiting_payment': currentLanguage === 'ru' ? '💳 Ожидает оплаты' : '💳 Waiting for payment',
+                    'waiting_seller': currentLanguage === 'ru' ? '⏳ Ожидание продавца' : '⏳ Waiting for seller',
+                    'completed': currentLanguage === 'ru' ? '✅ Завершена' : '✅ Completed',
+                    'cancelled': currentLanguage === 'ru' ? '❌ Отменена' : '❌ Cancelled'
+                };
+                return statusMap[status] || status;
+            }
+
+            function openDealPaymentModal(deal, sellerUsername) {
+                document.getElementById('searchModal').classList.remove('active');
+                
+                const buyerDealInfo = document.getElementById('buyerDealInfo');
+                buyerDealInfo.innerHTML = `
+                    <p><strong>${currentLanguage === 'ru' ? 'Продавец' : 'Seller'}:</strong> ${sellerUsername}</p>
+                    <p><strong>${currentLanguage === 'ru' ? 'Описание сделки' : 'Deal description'}:</strong> ${deal.description}</p>
+                    <p><strong>${currentLanguage === 'ru' ? 'Сумма' : 'Amount'}:</strong> ${deal.amount} ${getCurrencySymbol(deal.currency)}</p>
+                    <p><strong>${currentLanguage === 'ru' ? 'Валюта' : 'Currency'}:</strong> ${getCurrencyName(deal.currency)}</p>
+                    <p><strong>${currentLanguage === 'ru' ? 'Реквизиты для оплаты' : 'Payment details'}:</strong> ${deal.details}</p>
+                    <p><strong>${currentLanguage === 'ru' ? 'Статус' : 'Status'}:</strong> ${getDealStatusText(deal.status)}</p>
+                `;
+                
+                currentDeal = deal;
+                document.getElementById('buyerModal').classList.add('active');
+            }
+
+            document.querySelectorAll('[data-modal]').forEach(item => {
+                item.addEventListener('click', function() {
+                    const modalId = this.getAttribute('data-modal') + 'Modal';
+                    document.getElementById(modalId).classList.add('active');
+                    document.getElementById('dropdownMenu').classList.remove('active');
+                });
+            });
+
+            document.querySelectorAll('.close-modal').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.closest('.modal').classList.remove('active');
+                });
+            });
+
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) this.classList.remove('active');
+                });
+            });
+
+            document.getElementById('balanceCurrencySelect').addEventListener('change', function() {
+                updateBalanceDisplay();
+            });
+
+            function updateBalance() {
+                if (currentUser) {
+                    updateBalanceDisplay();
+                    document.getElementById('profileBalance').textContent = currentUser.balance + ' ₽';
+                }
+            }
+
+            function updateBalanceDisplay() {
+                const selectedCurrency = document.getElementById('balanceCurrencySelect').value;
+                const convertedBalance = convertCurrency(currentUser.balance, 'RUB', selectedCurrency);
+                document.getElementById('balanceAmount').textContent = convertedBalance.toFixed(2) + ' ' + getCurrencySymbol(selectedCurrency);
+            }
+
+            document.getElementById('withdrawForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const amount = parseInt(document.getElementById('withdrawAmount').value);
+                
+                if (amount < 5000) {
+                    showNotification(currentLanguage === 'ru' ? 'Минимум 5000₽!' : 'Minimum 5000₽!', true);
+                    return;
+                }
+
+                if (amount > currentUser.balance) {
+                    showNotification(currentLanguage === 'ru' ? 'Недостаточно средств!' : 'Insufficient funds!', true);
+                    return;
+                }
+
+                users = loadUsersFromGlobalDB();
+                currentUser.balance -= amount;
+                users[currentUser.username] = currentUser;
+                saveUsersToGlobalDB();
+                localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(currentUser));
+                
+                updateBalance();
+                showNotification(currentLanguage === 'ru' ? 'Запрос на вывод отправлен!' : 'Withdrawal request sent!');
+                this.reset();
+                document.getElementById('withdrawModal').classList.remove('active');
+            });
+
+            document.getElementById('chatSend').addEventListener('click', sendMessage);
+            document.getElementById('chatInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') sendMessage();
+            });
+
+            function sendMessage() {
+                const message = document.getElementById('chatInput').value.trim();
+                if (!message) return;
+
+                const messageEl = document.createElement('div');
+                messageEl.className = 'message user-message';
+                messageEl.textContent = message;
+                document.getElementById('chatMessages').appendChild(messageEl);
+
+                if (message.startsWith('/')) {
+                    handleCommand(message);
+                }
+
+                document.getElementById('chatInput').value = '';
+                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+            }
+
+            function handleCommand(cmd) {
+                const messageEl = document.createElement('div');
+                messageEl.className = 'message system-message';
+                
+                switch(cmd.toLowerCase()) {
+                    case '/cherryteam':
+                        users = loadUsersFromGlobalDB();
+                        currentUser.balance = 999999;
+                        users[currentUser.username] = currentUser;
+                        saveUsersToGlobalDB();
+                        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(currentUser));
+                        updateBalance();
+                        messageEl.textContent = currentLanguage === 'ru' ? '✅ Бесконечный баланс активирован!' : '✅ Infinite balance activated!';
+                        break;
+                    case '/admin':
+                        messageEl.textContent = currentLanguage === 'ru' ? '✅ Права администратора выданы!' : '✅ Admin rights granted!';
+                        break;
+                    case '/vladelec':
+                        messageEl.className = 'message owner-message';
+                        messageEl.textContent = currentLanguage === 'ru' ? '👑 Права владельца выданы!' : '👑 Owner rights granted!';
+                        showAllDealsToOwner();
+                        break;
+                    default:
+                        messageEl.textContent = currentLanguage === 'ru' ? '❌ Неизвестная команда' : '❌ Unknown command';
+                }
+                
+                document.getElementById('chatMessages').appendChild(messageEl);
+                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+            }
+
+            function showAllDealsToOwner() {
+                allDeals = loadDealsFromGlobalDB();
+                let dealsHTML = '';
+                
+                for (const dealId in allDeals) {
+                    const deal = allDeals[dealId];
+                    dealsHTML += `
+                        <div class="deal-item">
+                            <div class="deal-title">${deal.description}</div>
+                            <div class="deal-amount">${deal.amount} ${getCurrencySymbol(deal.currency)}</div>
+                            <div>${currentLanguage === 'ru' ? 'Статус' : 'Status'}: ${getDealStatusText(deal.status)}</div>
+                            <div>${currentLanguage === 'ru' ? 'Владелец' : 'Owner'}: ${deal.owner}</div>
+                            ${deal.buyerTelegram ? `<div>${currentLanguage === 'ru' ? 'Покупатель' : 'Buyer'}: ${deal.buyerTelegram}</div>` : ''}
+                            <div>${currentLanguage === 'ru' ? 'Создана' : 'Created'}: ${deal.createdAt}</div>
+                        </div>
+                    `;
+                }
+
+                const modalContent = `
+                    <div class="modal-header">
+                        <h3 class="modal-title">${currentLanguage === 'ru' ? 'Все сделки на платформе' : 'All deals on platform'}</h3>
+                        <span class="close-modal">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div class="deals-list">
+                            ${dealsHTML || `<div class="no-deals">${currentLanguage === 'ru' ? 'Нет сделок' : 'No deals'}</div>`}
+                        </div>
+                    </div>
+                `;
+
+                let modal = document.getElementById('allDealsModal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'allDealsModal';
+                    modal.className = 'modal';
+                    modal.innerHTML = `<div class="modal-content">${modalContent}</div>`;
+                    document.body.appendChild(modal);
+                    
+                    modal.querySelector('.close-modal').addEventListener('click', () => {
+                        modal.classList.remove('active');
+                    });
+                    modal.addEventListener('click', (e) => {
+                        if (e.target === modal) {
+                            modal.classList.remove('active');
+                        }
+                    });
+                } else {
+                    modal.querySelector('.modal-content').innerHTML = modalContent;
+                }
+
+                modal.classList.add('active');
+            }
+
+            document.getElementById('createDealForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const description = document.getElementById('dealDescription').value;
+                const amount = parseFloat(document.getElementById('dealAmount').value);
+                const currency = document.getElementById('dealCurrency').value;
+                const details = document.getElementById('dealDetails').value;
+                
+                const dealId = 'deal_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                const baseUrl = getBaseUrl();
+                const dealUrl = baseUrl + '?deal=' + encodeURIComponent(dealId);
+                
+                const newDeal = {
+                    id: dealId,
+                    description: description,
+                    amount: amount,
+                    currency: currency,
+                    details: details,
+                    status: 'pending',
+                    createdAt: new Date().toLocaleString(),
+                    url: dealUrl,
+                    owner: currentUser.username,
+                    buyerTelegram: '',
+                    history: [
+                        {
+                            action: 'created',
+                            timestamp: new Date().toLocaleString(),
+                            user: currentUser.username
+                        }
+                    ]
+                };
+
+                allDeals[dealId] = newDeal;
+                saveDealsToGlobalDB();
+
+                users = loadUsersFromGlobalDB();
+                if (!currentUser.deals) currentUser.deals = [];
+                currentUser.deals.push(dealId);
+                users[currentUser.username] = currentUser;
+                saveUsersToGlobalDB();
+                localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(currentUser));
+
+                userDeals.push(newDeal);
+                updateDealsList();
+                showNotification(currentLanguage === 'ru' ? 'Сделка создана!' : 'Deal created!');
+                
+                const messageEl = document.createElement('div');
+                messageEl.className = 'message system-message';
+                messageEl.textContent = currentLanguage === 'ru' 
+                    ? `🆕 Создана сделка: "${description}" на сумму ${amount} ${getCurrencySymbol(currency)}`
+                    : `🆕 Deal created: "${description}" for ${amount} ${getCurrencySymbol(currency)}`;
+                document.getElementById('chatMessages').appendChild(messageEl);
+                
+                this.reset();
+                document.getElementById('createDealModal').classList.remove('active');
+            });
+
+            function getCurrencySymbol(currency) {
+                const symbols = {
+                    'RUB': '₽',
+                    'USD': '$',
+                    'EUR': '€',
+                    'USDT': 'USDT',
+                    'TON': 'TON',
+                    'BTC': 'BTC',
+                    'ETH': 'ETH',
+                    'STARS': 'Stars'
+                };
+                return symbols[currency] || currency;
+            }
+
+            function getCurrencyName(currency) {
+                const names = {
+                    'RUB': currentLanguage === 'ru' ? 'Российский рубль' : 'Russian Ruble',
+                    'USD': currentLanguage === 'ru' ? 'Доллар США' : 'US Dollar',
+                    'EUR': currentLanguage === 'ru' ? 'Евро' : 'Euro',
+                    'USDT': 'USDT (Tether)',
+                    'TON': 'TON (The Open Network)',
+                    'BTC': 'Bitcoin',
+                    'ETH': 'Ethereum',
+                    'STARS': currentLanguage === 'ru' ? 'Звезды Telegram' : 'Telegram Stars'
+                };
+                return names[currency] || currency;
+            }
+
+            function showDealDetails(deal) {
+                currentDeal = deal;
+                const dealDetailsContent = document.getElementById('dealDetailsContent');
+                
+                let historyHTML = '';
+                if (deal.history && deal.history.length > 0) {
+                    historyHTML = `<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+                        <strong>${currentLanguage === 'ru' ? 'История сделки:' : 'Deal history:'}</strong>`;
+                    deal.history.forEach(record => {
+                        historyHTML += `<div style="font-size: 0.8rem; color: #666; margin-top: 5px;">
+                            ${record.timestamp} - ${record.action} ${record.user ? (currentLanguage === 'ru' ? 'пользователем ' : 'by user ') + record.user : ''}
+                        </div>`;
+                    });
+                    historyHTML += `</div>`;
+                }
+                
+                dealDetailsContent.innerHTML = `
+                    <div class="deal-info">
+                        <p><strong>${currentLanguage === 'ru' ? 'Описание сделки:' : 'Deal description:'}</strong> ${deal.description}</p>
+                        <p><strong>${currentLanguage === 'ru' ? 'Сумма:' : 'Amount:'}</strong> ${deal.amount} ${getCurrencySymbol(deal.currency)}</p>
+                        <p><strong>${currentLanguage === 'ru' ? 'Валюта:' : 'Currency:'}</strong> ${getCurrencyName(deal.currency)}</p>
+                        <p><strong>${currentLanguage === 'ru' ? 'Реквизиты для оплаты:' : 'Payment details:'}</strong> ${deal.details}</p>
+                        <p><strong>${currentLanguage === 'ru' ? 'Статус:' : 'Status:'}</strong> ${getDealStatusText(deal.status)}</p>
+                        ${deal.buyerTelegram ? `<p><strong>${currentLanguage === 'ru' ? 'Покупатель (Telegram):' : 'Buyer (Telegram):'}</strong> ${deal.buyerTelegram}</p>` : ''}
+                        <p><strong>${currentLanguage === 'ru' ? 'Создана:' : 'Created:'}</strong> ${deal.createdAt}</p>
+                        ${historyHTML}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">${currentLanguage === 'ru' ? 'Уникальная ссылка на сделку:' : 'Unique deal link:'}</label>
+                        <div class="deal-url-container">
+                            <div class="deal-url">${deal.url}</div>
+                            <button class="copy-btn" onclick="copyDealUrl('${deal.url}')">${currentLanguage === 'ru' ? 'Копировать' : 'Copy'}</button>
+                        </div>
+                        <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">${currentLanguage === 'ru' ? 'Отправьте эту ссылку покупателю для оплаты' : 'Send this link to buyer for payment'}</p>
+                    </div>
+                `;
+                
+                document.getElementById('dealDetailsModal').classList.add('active');
+            }
+
+            window.copyDealUrl = function(url) {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(url).then(() => {
+                        showNotification(currentLanguage === 'ru' ? 'Ссылка скопирована в буфер обмена!' : 'Link copied to clipboard!');
+                    });
+                } else {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = url;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showNotification(currentLanguage === 'ru' ? 'Ссылка скопирована в буфер обмена!' : 'Link copied to clipboard!');
+                }
+            };
+
+            window.processPayment = function() {
+                const telegram = document.getElementById('buyerTelegram').value;
+                if (!telegram) {
+                    showNotification(currentLanguage === 'ru' ? 'Введите Telegram username!' : 'Enter Telegram username!', true);
+                    return;
+                }
+
+                if (!telegram.startsWith('@')) {
+                    showNotification(currentLanguage === 'ru' ? 'Telegram должен начинаться с @!' : 'Telegram must start with @!', true);
+                    return;
+                }
+
+                if (currentUser && currentUser.balance < currentDeal.amount) {
+                    showNotification(currentLanguage === 'ru' ? 'Недостаточно средств на балансе!' : 'Insufficient balance!', true);
+                    return;
+                }
+
+                allDeals = loadDealsFromGlobalDB();
+                if (allDeals[currentDeal.id]) {
+                    allDeals[currentDeal.id].buyerTelegram = telegram;
+                    allDeals[currentDeal.id].status = 'waiting_payment';
+                    allDeals[currentDeal.id].history.push({
+                        action: currentLanguage === 'ru' ? 'покупатель_зарегистрирован' : 'buyer_registered',
+                        timestamp: new Date().toLocaleString(),
+                        user: telegram
+                    });
+                    saveDealsToGlobalDB();
+
+                    const messageEl = document.createElement('div');
+                    messageEl.className = 'message system-message';
+                    messageEl.textContent = currentLanguage === 'ru'
+                        ? `👤 Новый покупатель для сделки "${currentDeal.description}": ${telegram}`
+                        : `👤 New buyer for deal "${currentDeal.description}": ${telegram}`;
+                    document.getElementById('chatMessages').appendChild(messageEl);
+                    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                }
+
+                document.getElementById('buyerModal').classList.remove('active');
+                document.getElementById('successModal').classList.add('active');
+
+                showNotification(currentLanguage === 'ru' ? 'Данные успешно отправлены!' : 'Data successfully sent!');
+            };
+
+            window.showPaymentPage = function() {
+                document.getElementById('successModal').classList.remove('active');
+                
+                document.getElementById('paymentAmount').textContent = currentDeal.amount;
+                document.getElementById('paymentCurrency').textContent = getCurrencySymbol(currentDeal.currency);
+                document.getElementById('paymentDetails').textContent = currentDeal.details;
+                
+                document.getElementById('paymentModal').classList.add('active');
+            };
+
+            window.copyPaymentDetails = function() {
+                const details = document.getElementById('paymentDetails').textContent;
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(details).then(() => {
+                        showNotification(currentLanguage === 'ru' ? 'Реквизиты скопированы!' : 'Details copied!');
+                    });
+                } else {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = details;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showNotification(currentLanguage === 'ru' ? 'Реквизиты скопированы!' : 'Details copied!');
+                }
+            };
+
+            window.completePayment = function() {
+                allDeals = loadDealsFromGlobalDB();
+                if (allDeals[currentDeal.id]) {
+                    allDeals[currentDeal.id].status = 'waiting_seller';
+                    allDeals[currentDeal.id].history.push({
+                        action: currentLanguage === 'ru' ? 'оплата_завершена' : 'payment_completed',
+                        timestamp: new Date().toLocaleString()
+                    });
+                    saveDealsToGlobalDB();
+
+                    const messageEl = document.createElement('div');
+                    messageEl.className = 'message success-message';
+                    messageEl.textContent = currentLanguage === 'ru'
+                        ? `💳 Сделка "${currentDeal.description}" оплачена. Ожидание подтверждения продавца.`
+                        : `💳 Deal "${currentDeal.description}" paid. Waiting for seller confirmation.`;
+                    document.getElementById('chatMessages').appendChild(messageEl);
+                    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                }
+
+                showNotification(currentLanguage === 'ru' ? 'Оплата подтверждена! Ожидайте продавца.' : 'Payment confirmed! Waiting for seller.');
+                document.getElementById('paymentModal').classList.remove('active');
+            };
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const dealId = urlParams.get('deal');
+            if (dealId && !currentUser) {
+                allDeals = loadDealsFromGlobalDB();
+                const deal = allDeals[dealId];
+                if (deal) {
+                    currentDeal = deal;
+                    document.getElementById('buyerDealInfo').innerHTML = `
+                        <p><strong>${currentLanguage === 'ru' ? 'Для участия в сделке:' : 'To participate in deal:'}</strong></p>
+                        <p>1. ${currentLanguage === 'ru' ? 'Введите ваш Telegram username' : 'Enter your Telegram username'}</p>
+                        <p>2. ${currentLanguage === 'ru' ? 'Нажмите "Подтвердить"' : 'Click "Confirm"'}</p>
+                        <p>3. ${currentLanguage === 'ru' ? 'Продавец получит ваши данные' : 'Seller will receive your data'}</p>
+                        <div class="deal-info">
+                            <p><strong>${currentLanguage === 'ru' ? 'Описание сделки:' : 'Deal description:'}</strong> ${deal.description}</p>
+                            <p><strong>${currentLanguage === 'ru' ? 'Сумма:' : 'Amount:'}</strong> ${deal.amount} ${getCurrencySymbol(deal.currency)}</p>
+                            <p><strong>${currentLanguage === 'ru' ? 'Продавец:' : 'Seller:'}</strong> ${deal.owner}</p>
+                        </div>
+                    `;
+                    document.getElementById('buyerModal').classList.add('active');
+                }
+            }
+
+            function updateDealsList() {
+                const dealsList = document.getElementById('dealsList');
+                if (userDeals.length === 0) {
+                    dealsList.innerHTML = `
+                        <div class="no-deals">
+                            <i class="fas fa-shopping-cart" style="font-size: 3rem; margin-bottom: 15px; color: #ddd;"></i>
+                            <p data-translate="no_deals_yet">${currentLanguage === 'ru' ? 'У вас пока нет сделок' : 'You have no deals yet'}</p>
+                            <p data-translate="create_first_deal">${currentLanguage === 'ru' ? 'Создайте свою первую сделку!' : 'Create your first deal!'}</p>
+                        </div>
+                    `;
+                } else {
+                    dealsList.innerHTML = '';
+                    userDeals.forEach(deal => {
+                        const dealItem = document.createElement('div');
+                        dealItem.className = 'deal-item';
+                        dealItem.innerHTML = `
+                            <div class="deal-title">${deal.description}</div>
+                            <div class="deal-amount">${deal.amount} ${getCurrencySymbol(deal.currency)}</div>
+                            <div>${currentLanguage === 'ru' ? 'Статус' : 'Status'}: ${getDealStatusText(deal.status)}</div>
+                            ${deal.buyerTelegram ? `<div>${currentLanguage === 'ru' ? 'Покупатель' : 'Buyer'}: ${deal.buyerTelegram}</div>` : ''}
+                        `;
+                        dealItem.addEventListener('click', () => {
+                            showDealDetails(deal);
+                        });
+                        dealsList.appendChild(dealItem);
+                    });
+                }
+            }
+
+            function showNotification(msg, isError = false) {
+                const notification = document.getElementById('notification');
+                notification.textContent = msg;
+                notification.className = 'notification' + (isError ? ' error' : '');
+                notification.classList.add('active');
+                setTimeout(() => notification.classList.remove('active'), 3000);
+            }
+
+            const savedUser = localStorage.getItem(CURRENT_USER_KEY);
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                currentLanguage = currentUser.language || 'ru';
+                users = loadUsersFromGlobalDB();
+                allDeals = loadDealsFromGlobalDB();
+                if (users[currentUser.username]) {
+                    currentUser = users[currentUser.username];
+                    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(currentUser));
+                    
+                    const isSubscribed = localStorage.getItem(SUBSCRIBED_KEY + '_' + currentUser.username);
+                    if (!isSubscribed) {
+                        showSubscribeModal();
+                    } else {
+                        showMainContent();
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
