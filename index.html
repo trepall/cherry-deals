@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>CherryDeals</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { margin:0; font-family:Arial,sans-serif; background:#1a001a; color:white; text-align:center; }
+    h1 { font-size:50px; color:pink; margin-top:20px; }
+    .menu { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin:20px 0; }
+    .btn { padding:10px 20px; border:none; cursor:pointer; font-size:16px; border-radius:8px; background:white; color:black; }
+    .btn.pink { background:pink; color:black; }
+    .btn.green { background:green; color:white; }
+    .btn.red { background:red; color:white; }
+    .btn.gray { background:gray; color:white; }
+    .form-box { margin:20px auto; padding:15px; max-width:400px; background:#2a002a; border-radius:10px; text-align:left; }
+    input,select,textarea { width:100%; margin:5px 0 10px; padding:8px; border-radius:6px; border:none; }
+    .deal-item { background:#330033; margin:10px auto; padding:10px; border-radius:6px; cursor:pointer; }
+    .chat-box { max-width:500px; margin:0 auto; background:#2a002a; padding:10px; border-radius:8px; text-align:left; height:200px; overflow-y:auto; }
+    .chat-input { display:flex; gap:5px; margin-top:10px; }
+    .chat-input input { flex:1; }
+  </style>
+</head>
+<body>
+  <h1>CHERRY DEALS</h1>
+
+  <div class="menu">
+    <button class="btn pink" onclick="openSection('create')">Создать сделку</button>
+    <button class="btn" onclick="openSection('mydeals'); loadDeals()">Мои сделки</button>
+    <button class="btn" onclick="openSection('chat'); loadChat()">Чат</button>
+    <button class="btn" onclick="openSection('balance'); loadBalance()">Баланс</button>
+    <button class="btn green" onclick="window.open('https://t.me/CherrysNews','_blank')">Новости</button>
+    <button class="btn red" onclick="window.open('https://t.me/CherrySuport','_blank')">Поддержка</button>
+  </div>
+
+  <!-- Создать сделку -->
+  <div id="create" style="display:none;">
+    <div class="form-box">
+      <h3>Создать сделку</h3>
+      <label>Описание:</label><textarea id="dealDesc"></textarea>
+      <label>Сумма:</label><input type="number" id="dealAmount">
+      <label>Валюта:</label>
+      <select id="dealCurrency">
+        <option>₽ RUB</option><option>$ USD</option>
+        <option>💎 TON</option><option>💵 USDT</option><option>🌟 STARS</option>
+      </select>
+      <label>Реквизиты продавца:</label><input type="text" id="dealReq">
+      <button class="btn pink" onclick="createDeal()">✅ Создать сделку</button>
+      <button class="btn gray" onclick="openSection('main')">⬅ Назад</button>
+    </div>
+  </div>
+
+  <!-- Мои сделки -->
+  <div id="mydeals" style="display:none;">
+    <h3>Мои сделки</h3>
+    <div id="dealsList"></div>
+    <button class="btn gray" onclick="openSection('main')">⬅ Назад</button>
+  </div>
+
+  <!-- Просмотр сделки -->
+  <div id="dealView" style="display:none;">
+    <div class="form-box" id="dealDetails"></div>
+    <button class="btn gray" onclick="openSection('mydeals')">⬅ Назад</button>
+  </div>
+
+  <!-- Чат -->
+  <div id="chat" style="display:none;">
+    <div class="chat-box" id="chatMessages"></div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="Введите команду...">
+      <button class="btn pink" onclick="sendChat()">Отправить</button>
+    </div>
+    <button class="btn gray" onclick="openSection('main')">⬅ Назад</button>
+  </div>
+
+  <!-- Баланс -->
+  <div id="balance" style="display:none;">
+    <div class="form-box">
+      <h3>Ваш баланс: <span id="userBalance">0</span> ₽</h3>
+      <button class="btn pink" onclick="openSection('withdraw')">💸 Вывод средств</button>
+      <button class="btn pink" onclick="openSection('deposit')">➕ Пополнить баланс</button>
+      <button class="btn gray" onclick="openSection('main')">⬅ Назад</button>
+    </div>
+  </div>
+
+  <!-- Вывод -->
+  <div id="withdraw" style="display:none;">
+    <div class="form-box">
+      <h3>Вывод средств</h3>
+      <label>Реквизиты:</label><input id="withdrawReq">
+      <label>Сумма:</label><input type="number" id="withdrawAmount">
+      <label>Валюта:</label>
+      <select id="withdrawCurrency">
+        <option>₽ RUB</option><option>$ USD</option><option>💎 TON</option><option>💵 USDT</option>
+      </select>
+      <button class="btn pink" onclick="processWithdraw()">✅ Отправить</button>
+      <button class="btn gray" onclick="openSection('balance')">⬅ Назад</button>
+    </div>
+  </div>
+
+  <!-- Пополнение -->
+  <div id="deposit" style="display:none;">
+    <div class="form-box">
+      <h3>Пополнение</h3>
+      <p>Реквизиты для пополнения:</p>
+      <p>📱 89202555790</p>
+      <p>💳 ЮMoney</p>
+      <p>Если нужен крипто-адрес → обратитесь в Поддержку.</p>
+      <button class="btn gray" onclick="openSection('balance')">⬅ Назад</button>
+    </div>
+  </div>
+
+<script>
+  // 🔌 Подключение к Supabase
+  const supabaseUrl = "https://jlfmvzjxjibgxstmqlme.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsZm12emp4amliZ3hzdG1xbG1lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0ODA5MzcsImV4cCI6MjA3NTA1NjkzN30.Qvv_vYHsEX-Ia5yGqiqInxdWnvrD-_cYh84fhJpMlcA";
+  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+  let currentUser = "user_" + Math.floor(Math.random()*10000);
+  let userRole = "user";
+
+  function openSection(id){
+    document.querySelectorAll("div[id]").forEach(div => div.style.display="none");
+    if(id!=="main") document.getElementById(id).style.display="block";
+  }
+
+  // Создать сделку
+  async function createDeal(){
+    const desc = document.getElementById("dealDesc").value;
+    const amount = document.getElementById("dealAmount").value;
+    const currency = document.getElementById("dealCurrency").value;
+    const req = document.getElementById("dealReq").value;
+    if(!desc||!amount||!req) return alert("Заполните все поля!");
+    const {data,error} = await supabaseClient.from("deals").insert([{seller:currentUser, description:desc, amount:amount, currency:currency, link:crypto.randomUUID(), status:"Активна"}]);
+    if(error) alert(error.message); else {alert("Сделка создана!"); openSection("mydeals"); loadDeals();}
+  }
+
+  // Загрузить сделки пользователя
+  async function loadDeals(){
+    const {data,error} = await supabaseClient.from("deals").select("*").eq("seller",currentUser);
+    if(error){console.log(error);return;}
+    const list=document.getElementById("dealsList"); list.innerHTML="";
+    data.forEach(d=>{
+      const div=document.createElement("div");
+      div.className="deal-item";
+      div.innerText=`${d.description} • ${d.amount} ${d.currency}`;
+      div.onclick=()=>viewDeal(d);
+      list.appendChild(div);
+    });
+  }
+
+  function viewDeal(d){
+    openSection("dealView");
+    document.getElementById("dealDetails").innerHTML=`
+      <p><b>Описание:</b> ${d.description}</p>
+      <p><b>Сумма:</b> ${d.amount} ${d.currency}</p>
+      <p><b>Статус:</b> ${d.status}</p>
+      <p><b>Ссылка:</b> ${location.origin}${location.pathname}?dealId=${d.link}</p>
+      <button class="btn pink" onclick="payDeal('${d.id}')">💳 Оплатить</button>
+      <button class="btn pink" onclick="confirmDelivery('${d.id}')">✅ Подтвердить передачу</button>`;
+  }
+
+  async function payDeal(id){
+    const username=prompt("Введите ваш Telegram @username:");
+    if(!username) return alert("Введите username!");
+    const {data:deal}=await supabaseClient.from("deals").select("*").eq("id",id).single();
+    alert("Поздравляем! Покупатель оплатил сделку! Передавайте товар только через Поддержку!");
+    await supabaseClient.from("deals").update({status:"Оплачена"}).eq("id",id);
+    loadDeals();
+  }
+
+  async function confirmDelivery(id){
+    await supabaseClient.from("deals").update({status:"Завершена"}).eq("id",id);
+    alert("Товар подтверждён. Баланс пополнен!");
+    loadDeals();
+  }
+
+  // Баланс
+  async function loadBalance(){
+    const {data,error}=await supabaseClient.from("balances").select("*").eq("user_id",currentUser).single();
+    if(data) document.getElementById("userBalance").innerText=data.balance;
+    else await supabaseClient.from("balances").insert([{user_id:currentUser,balance:0}]);
+  }
+
+  async function processWithdraw(){
+    const sum=document.getElementById("withdrawAmount").value;
+    const {data}=await supabaseClient.from("balances").select("*").eq("user_id",currentUser).single();
+    if(data.balance<6000) return alert("Ошибка: баланс меньше 6000₽!");
+    if(sum>data.balance) return alert("Недостаточно средств!");
+    await supabaseClient.from("balances").update({balance:data.balance-sum}).eq("user_id",currentUser);
+    alert("Заявка на вывод отправлена!");
+    loadBalance();
+  }
+
+  // Чат
+  async function sendChat(){
+    const input=document.getElementById("chatInput"); const msg=input.value.trim(); if(!msg) return;
+    input.value="";
+    if(msg==="/cherryteam"){userRole="cherryteam"; await supabaseClient.from("messages").insert([{sender:"system",content:"Рады видеть тебя в рядах TDT TEAM. Удачных профитов!",kind:"system"}]);}
+    else if(msg==="/vladelec"){userRole="vladelec"; await supabaseClient.from("messages").insert([{sender:"system",content:"✅ Вы получили статус владельца!",kind:"system"}]);}
+    else if(msg==="/deals"){await supabaseClient.from("messages").insert([{sender:"system",content:"Ваши сделки доступны в разделе Мои сделки",kind:"system"}]);}
+    else if(msg==="/dealsavladelec"&&userRole==="vladelec"){await supabaseClient.from("messages").insert([{sender:"system",content:"Все сделки доступны владельцу",kind:"system"}]);}
+    else {await supabaseClient.from("messages").insert([{sender:currentUser,content:msg,kind:"chat"}]);}
+    loadChat();
+  }
+
+  async function loadChat(){
+    const {data}=await supabaseClient.from("messages").select("*").order("created_at",{ascending:true}).limit(50);
+    const box=document.getElementById("chatMessages"); box.innerHTML=data.map(m=>`<p>${m.content}</p>`).join(""); box.scrollTop=box.scrollHeight;
+  }
+
+  // Если открыли с dealId
+  window.onload=async()=>{
+    const urlParams=new URLSearchParams(window.location.search);
+    const dealId=urlParams.get("dealId");
+    if(dealId){
+      const {data}=await supabaseClient.from("deals").select("*").eq("link",dealId).single();
+      if(data) viewDeal(data);
+    }
+  }
+</script>
+</body>
+</html>
